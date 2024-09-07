@@ -54,9 +54,9 @@ func ReadJson(dst dto.Verifiable, r *http.Request) error {
 		return err
 	}
 
-  if err := dst.Verify(); err != nil {
-    return err
-  }
+	if err := dst.Verify(); err != nil {
+		return err
+	}
 
 	return nil
 }
