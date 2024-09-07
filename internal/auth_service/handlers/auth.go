@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"log"
+	"net"
 	"net/http"
 
 	"github.com/basado1991/jwt_auth_service/internal/auth_service/utils"
@@ -31,7 +32,9 @@ func (h Handler) getAuth(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tokenPair, refreshTokenHashed, err := h.makeTokenPair(id, r.RemoteAddr)
+	remoteAddr, _, _ := net.SplitHostPort(r.RemoteAddr)
+
+	tokenPair, refreshTokenHashed, err := h.makeTokenPair(id, remoteAddr)
 	if err != nil {
 		utils.WriteInternalError(w)
 		log.Println(err)

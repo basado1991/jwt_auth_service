@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 
 	"github.com/basado1991/jwt_auth_service/internal/auth_service/utils"
@@ -69,9 +70,10 @@ func (h Handler) postRefresh(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	currentAddr := token["ip"].(string)
+	currentAddr, _, _ := net.SplitHostPort(token["ip"].(string))
+	remoteAddr, _, _ := net.SplitHostPort(r.RemoteAddr)
 
-	tokenPair, refreshTokenHashed, err := h.makeTokenPair(token["id"].(string), r.RemoteAddr)
+	tokenPair, refreshTokenHashed, err := h.makeTokenPair(token["id"].(string), remoteAddr)
 	if err != nil {
 		utils.WriteInternalError(w)
 		log.Println(err)
@@ -86,7 +88,7 @@ func (h Handler) postRefresh(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if currentAddr != r.RemoteAddr {
+	if currentAddr != remoteAddr {
 		err := h.Mailer.Send(ctx, user.Email, NOTIFICATION_MESSAGE_SUBJECT, fmt.Sprintf(NOTIFICATION_MESSAGE_BODY_TEMPLATE, user.Name, r.RemoteAddr))
 		if err != nil {
 			log.Println(err)
