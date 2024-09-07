@@ -3,7 +3,7 @@ package handlers
 import "time"
 
 const (
-	REQUEST_TIMEOUT                    = 10 * time.Second
+	REQUEST_TIMEOUT                    = 3 * time.Second
 	TOKEN_EXPIRATION_TIME              = 2 * 24 * time.Hour
 	NOTIFICATION_MESSAGE_SUBJECT       = "IP-адрес изменен!"
 	NOTIFICATION_MESSAGE_BODY_TEMPLATE = ("Уважаемый %s!\r\n" +
