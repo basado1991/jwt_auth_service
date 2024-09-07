@@ -53,10 +53,10 @@ func (h Handler) getAuth(w http.ResponseWriter, r *http.Request) {
 	}
 
 	payload := map[string]any{
-		"id":   id,
+		"id":           id,
 		"refresh_hash": string(refreshTokenHashed),
-		"ip":   r.RemoteAddr,
-		"exp":  time.Now().Add(TOKEN_EXPIRATION_TIME).Unix(),
+		"ip":           r.RemoteAddr,
+		"exp":          time.Now().Add(TOKEN_EXPIRATION_TIME).Unix(),
 	}
 	accessToken, err := h.JwtEncoder.Encode(payload)
 	if err != nil {

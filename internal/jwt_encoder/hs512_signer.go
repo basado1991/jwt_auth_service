@@ -15,14 +15,14 @@ func NewJwtHS256Signer(key []byte) *JwtHS512Signer {
 
 func (s JwtHS512Signer) Sign(data []byte) ([]byte, error) {
 	mac := hmac.New(sha512.New, s.key)
-  _, err := mac.Write(data)
-  if err != nil {
-    return nil, err
-  }
+	_, err := mac.Write(data)
+	if err != nil {
+		return nil, err
+	}
 
-  return mac.Sum(nil), nil
+	return mac.Sum(nil), nil
 }
 
 func (s JwtHS512Signer) GetAlgorithm() string {
-  return "HS512"
+	return "HS512"
 }

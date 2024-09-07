@@ -7,6 +7,6 @@ import (
 )
 
 type Storage interface {
-  GetUserById(ctx context.Context, id string) (*types.User, error)
-  UpdateUser(ctx context.Context, user *types.User) error
+	GetUserById(ctx context.Context, id string) (*types.User, error)
+	UpdateUser(ctx context.Context, user *types.User) error
 }

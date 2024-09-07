@@ -14,63 +14,63 @@ import (
 )
 
 func getEnv(name string) string {
-  data, exists := os.LookupEnv(name)
-  if !exists {
-    log.Fatalln(name, "is not set")
-  }
+	data, exists := os.LookupEnv(name)
+	if !exists {
+		log.Fatalln(name, "is not set")
+	}
 
-  return data
+	return data
 }
 
 func main() {
-  keyPath := getEnv("AS_KEY_PATH")
-  key, err := os.ReadFile(keyPath)
-  if err != nil {
-    log.Fatalln(err)
-  }
+	keyPath := getEnv("AS_KEY_PATH")
+	key, err := os.ReadFile(keyPath)
+	if err != nil {
+		log.Fatalln(err)
+	}
 
-  addr := getEnv("AS_ADDR")
-  postgresAddr := getEnv("AS_POSTGRES")
+	addr := getEnv("AS_ADDR")
+	postgresAddr := getEnv("AS_POSTGRES")
 
-  sha512Signer := jwtencoder.NewJwtHS256Signer(key)
-  jwtEncoder := jwtencoder.NewJwtEncoder(*sha512Signer)
+	sha512Signer := jwtencoder.NewJwtHS256Signer(key)
+	jwtEncoder := jwtencoder.NewJwtEncoder(*sha512Signer)
 
-  sha512Verifier := jwtdecoder.NewJwtHS256Verifier(key)
-  jwtDecoder := jwtdecoder.NewJwtDecoder(*sha512Verifier)
+	sha512Verifier := jwtdecoder.NewJwtHS256Verifier(key)
+	jwtDecoder := jwtdecoder.NewJwtDecoder(*sha512Verifier)
 
-  storage, err := storage.NewPostgresStorage(postgresAddr)
-  if err != nil {
-    log.Fatalln(err)
-  }
+	storage, err := storage.NewPostgresStorage(postgresAddr)
+	if err != nil {
+		log.Fatalln(err)
+	}
 
-  mailHost := getEnv("AS_MAIL_HOST")
-  mailAddr := getEnv("AS_MAIL_ADDR")
-  mailUsername := getEnv("AS_MAIL_USERNAME")
-  mailPassword := getEnv("AS_MAIL_PASSWORD")
-  mailFrom := getEnv("AS_MAIL_FROM")
+	mailHost := getEnv("AS_MAIL_HOST")
+	mailAddr := getEnv("AS_MAIL_ADDR")
+	mailUsername := getEnv("AS_MAIL_USERNAME")
+	mailPassword := getEnv("AS_MAIL_PASSWORD")
+	mailFrom := getEnv("AS_MAIL_FROM")
 
-  mailer := mailer.NewMailer(mailer.MailerOpts{
-    Host: mailHost,
-    Addr: mailAddr,
+	mailer := mailer.NewMailer(mailer.MailerOpts{
+		Host: mailHost,
+		Addr: mailAddr,
 
-    User: mailUsername,
-    Password: mailPassword,
+		User:     mailUsername,
+		Password: mailPassword,
 
-    From: mailFrom,
-  })
+		From: mailFrom,
+	})
 
-  hs := handlers.Handler{
-    JwtEncoder: *jwtEncoder,
-    JwtDecoder: *jwtDecoder,
-    Mailer: *mailer,
-    Storage: storage,
-    Ctx: context.Background(),
-  }
-  
-  authservice.Init(hs)
+	hs := handlers.Handler{
+		JwtEncoder: *jwtEncoder,
+		JwtDecoder: *jwtDecoder,
+		Mailer:     *mailer,
+		Storage:    storage,
+		Ctx:        context.Background(),
+	}
 
-  log.Println("server started")
-  if err := authservice.Serve(addr); err != nil {
-    log.Fatalln(err)
-  }
+	authservice.Init(hs)
+
+	log.Println("server started")
+	if err := authservice.Serve(addr); err != nil {
+		log.Fatalln(err)
+	}
 }

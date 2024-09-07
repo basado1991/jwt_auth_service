@@ -10,11 +10,11 @@ import (
 )
 
 type Handler struct {
-  Ctx context.Context
-  JwtEncoder jwtencoder.JwtEncoder
-  JwtDecoder jwtdecoder.JwtDecoder
+	Ctx        context.Context
+	JwtEncoder jwtencoder.JwtEncoder
+	JwtDecoder jwtdecoder.JwtDecoder
 
-  Mailer mailer.Mailer
+	Mailer mailer.Mailer
 
-  Storage storage.Storage
+	Storage storage.Storage
 }

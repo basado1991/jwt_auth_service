@@ -1,5 +1,5 @@
 package jwtdecoder
 
 type JwtVerifier interface {
-  Verify(data []byte, signature []byte) (bool, error)
-} 
+	Verify(data []byte, signature []byte) (bool, error)
+}

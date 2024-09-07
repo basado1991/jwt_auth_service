@@ -7,9 +7,9 @@ import (
 )
 
 func Init(h handlers.Handler) {
-  handlers.SetupRoutes(h)
+	handlers.SetupRoutes(h)
 }
 
 func Serve(addr string) error {
-  return http.ListenAndServe(addr, nil)
+	return http.ListenAndServe(addr, nil)
 }

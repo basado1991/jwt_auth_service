@@ -8,35 +8,35 @@ import (
 )
 
 type JwtEncoder struct {
-  Signer JwtSigner
+	Signer JwtSigner
 }
 
 func NewJwtEncoder(signer JwtHS512Signer) *JwtEncoder {
-  return &JwtEncoder{Signer: signer}
+	return &JwtEncoder{Signer: signer}
 }
 
 func (e JwtEncoder) Encode(payload map[string]any) (string, error) {
-  header := types.JwtHeader {
-    Type: types.JWT_TYPE,
-    Algorithm: e.Signer.GetAlgorithm(),
-  }
-  headerMarshalled, err := json.Marshal(header)
-  if err != nil {
-    return "", err
-  }
-  payloadMarshalled, err := json.Marshal(payload)
+	header := types.JwtHeader{
+		Type:      types.JWT_TYPE,
+		Algorithm: e.Signer.GetAlgorithm(),
+	}
+	headerMarshalled, err := json.Marshal(header)
+	if err != nil {
+		return "", err
+	}
+	payloadMarshalled, err := json.Marshal(payload)
 
-  headerEncoded := base64.RawURLEncoding.EncodeToString(headerMarshalled)
-  payloadEncoded := base64.RawURLEncoding.EncodeToString(payloadMarshalled)
+	headerEncoded := base64.RawURLEncoding.EncodeToString(headerMarshalled)
+	payloadEncoded := base64.RawURLEncoding.EncodeToString(payloadMarshalled)
 
-  unsignedToken := headerEncoded + "." + payloadEncoded
+	unsignedToken := headerEncoded + "." + payloadEncoded
 
-  signature, err := e.Signer.Sign([]byte(unsignedToken))
-  if err != nil {
-    return "", err
-  }
+	signature, err := e.Signer.Sign([]byte(unsignedToken))
+	if err != nil {
+		return "", err
+	}
 
-  token := unsignedToken + "." + base64.RawURLEncoding.EncodeToString(signature)
+	token := unsignedToken + "." + base64.RawURLEncoding.EncodeToString(signature)
 
-  return token, nil
+	return token, nil
 }
