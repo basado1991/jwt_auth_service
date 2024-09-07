@@ -2,25 +2,18 @@ package handlers
 
 import (
 	"context"
-	"crypto/rand"
 	"database/sql"
 	"encoding/base64"
 	"errors"
 	"fmt"
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/basado1991/jwt_auth_service/internal/auth_service/utils"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type PostRefreshRequest struct {
-	RefreshToken string `json:"refresh_token"`
-}
-
-type PostRefreshResponse struct {
-	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`
 }
 
@@ -78,21 +71,7 @@ func (h Handler) postRefresh(w http.ResponseWriter, r *http.Request) {
 
 	currentAddr := token["ip"].(string)
 
-	token["ip"] = r.RemoteAddr
-	token["exp"] = time.Now().Add(TOKEN_EXPIRATION_TIME).Unix()
-	accessToken, err := h.JwtEncoder.Encode(token)
-	if err != nil {
-		utils.WriteInternalError(w)
-		log.Println(err)
-		return
-	}
-
-	refreshToken := make([]byte, 64)
-	rand.Read(refreshToken)
-
-	refreshTokenMarshalled := base64.RawURLEncoding.EncodeToString(refreshToken)
-
-	refreshTokenHashed, err := bcrypt.GenerateFromPassword(refreshToken, bcrypt.DefaultCost)
+	tokenPair, refreshTokenHashed, err := h.makeTokenPair(token["id"].(string), r.RemoteAddr)
 	if err != nil {
 		utils.WriteInternalError(w)
 		log.Println(err)
@@ -114,10 +93,7 @@ func (h Handler) postRefresh(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	err = utils.WriteJsonOk(w, PostRefreshResponse{
-		AccessToken:  accessToken,
-		RefreshToken: refreshTokenMarshalled,
-	})
+	err = utils.WriteJsonOk(w, tokenPair)
 	if err != nil {
 		log.Println(err)
 		return

@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  db:
+    image: docker.io/library/postgres
+    restart: always
+    env_file: ./.env.postgres
+    ports:
+      - 5432:5432
+    volumes:
+      - as_postgres_volume:/var/lib/postgresql
+    networks:
+      - podman
+
+  app:
+    build: .
+    restart: always
+    ports:
+      - 8080:8080
+    env_file: ./.env.app
+    volumes:
+      ./secret.key:/usr/src/app/secret.key
+    networks:
+      - podman
+
+volumes:
+  as_postgres_volume:
+
+networks:
+  podman:
